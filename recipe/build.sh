@@ -11,5 +11,13 @@ if [[ "$target_platform" == "win-64" ]]; then
 fi
 
 ./configure --prefix="$PREFIX" --with-lisp=sbcl --enable-lisp-core
-make
+
+if [[ "$target_platform" == "win-64" ]]; then
+  # Skip contrib on Windows: the emacs contrib invokes FRICASsys (native SBCL)
+  # which cannot resolve MSYS2-style paths (/d/bld/...) for its .core file.
+  make all-src
+else
+  make
+fi
+
 make install
