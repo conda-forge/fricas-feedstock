@@ -13,15 +13,22 @@ source:
   sha256: dd4d5e06db0ba4a43a5bfb64e94f6c8d4b10e68ac65a77556891a6b24af148a2
 
 build:
-  # Windows builds seem to only work with Cygwin
   number: 0
-  skip: win
 
 requirements:
   build:
-    - ${{ compiler('c') }}
-    - ${{ stdlib('c') }}
-    - make
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - make
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ stdlib('m2w64_c') }}
+        - m2-base
+        - m2-diffutils
+        - m2-make
   host:
     - sbcl
     - zstd
