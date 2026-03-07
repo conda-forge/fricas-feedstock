@@ -28,6 +28,9 @@ fi
 
 if [[ "$target_platform" == "win-64" ]]; then
   make install-src
+  # The Makefile install loop appends $(EXEEXT) (.exe) to each file it installs,
+  # so it looks for FRICASsys.core.exe which doesn't exist. Copy manually.
+  cp target/*/bin/FRICASsys.core "$PREFIX/lib/fricas/target/"*/bin/
   # The installed `fricas` is a bash script that cmd.exe cannot execute.
   # Create a .bat wrapper that sets FRICAS and invokes sbcl with the core
   # directly (equivalent to -nosman mode).
