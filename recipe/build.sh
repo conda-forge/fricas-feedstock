@@ -26,4 +26,8 @@ else
   make
 fi
 
-make install
+if [[ "$target_platform" == "win-64" ]]; then
+  make install-src
+else
+  make install
+fi
