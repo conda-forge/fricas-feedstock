@@ -28,6 +28,14 @@ fi
 
 if [[ "$target_platform" == "win-64" ]]; then
   make install-src
+  # The installed `fricas` is a bash script that cmd.exe cannot execute.
+  # Create a .bat wrapper that sets FRICAS and invokes sbcl with the core
+  # directly (equivalent to -nosman mode).
+  cat > "$PREFIX/bin/fricas.bat" << 'EOF'
+@echo off
+set "FRICAS=%~dp0..\lib\fricas\target\x86_64-w64-mingw32"
+sbcl --core "%FRICAS%\bin\FRICASsys.core" --end-runtime-options %*
+EOF
 else
   make install
 fi
