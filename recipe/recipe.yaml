@@ -33,7 +33,9 @@ requirements:
     - sbcl
     - zstd
   run:
-    - sbcl
+    - if: unix
+      then:
+        - sbcl
 
 tests:
   - script:
