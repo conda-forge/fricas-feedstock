@@ -7,5 +7,8 @@ conda_forge_output_validation: true
 conda_install_tool: pixi
 conda_build_tool: rattler-build
 provider:
-  linux_aarch64: default
-  osx_arm64: default
+  linux_aarch64: azure
+  osx_arm64: azure
+  linux_64: azure
+  osx_64: azure
+  win_64: azure
