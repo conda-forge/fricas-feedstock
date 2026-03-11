@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: fricas
-  version: 1.3.12
+  version: 1.3.13
 
 package:
   name: ${{ name|lower }}
@@ -10,22 +10,32 @@ package:
 
 source:
   url: https://github.com/fricas/fricas/releases/download/${{ version }}/fricas-${{ version }}-full.tar.bz2
-  sha256: 33201f9f56c20b1266d38f5290efe7486a38422ea90f707f0345f6a589e31c8d
+  sha256: dd4d5e06db0ba4a43a5bfb64e94f6c8d4b10e68ac65a77556891a6b24af148a2
 
 build:
-  # Windows builds seem to only work with Cygwin
-  # building on macOS fails with strange errors about zstd which seem to be related to some build/host directory confusion. It will be easier to figure this out once this is in the feedstock.
-  number: 1
-  skip: win or osx
+  number: 0
 
 requirements:
   build:
-    - ${{ compiler('c') }}
-    - ${{ stdlib('c') }}
-    - make
+    - if: unix
+      then:
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - make
+    - if: win
+      then:
+        - ${{ compiler('m2w64_c') }}
+        - ${{ stdlib('m2w64_c') }}
+        - m2-base
+        - m2-diffutils
+        - m2-make
   host:
     - sbcl
     - zstd
+  run:
+    - if: unix
+      then:
+        - sbcl
 
 tests:
   - script:
