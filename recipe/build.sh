@@ -23,12 +23,35 @@ if [[ "$target_platform" == "win-64" ]]; then
     [ -d "$d" ] && touch "$d/command.list"
   done
   make install-src
-  # The installed `fricas` is a bash script that cmd.exe cannot execute.
-  # Create a .bat wrapper that invokes FRICASsys.exe directly.
-  cat > "$PREFIX/bin/fricas.bat" << 'EOF'
+
+  FRICAS_TARGET="$PREFIX/lib/fricas/target/x86_64-w64-mingw32"
+
+  # Copy FRICASsys.exe to fricas.exe so it can be invoked directly
+  # (using a .bat wrapper is problematic because batch scripts require
+  # "call fricas" instead of just "fricas").
+  cp "$FRICAS_TARGET/bin/FRICASsys.exe" "$PREFIX/bin/fricas.exe"
+
+  # Create activation scripts that set the FRICAS environment variable
+  ACTIVATE_DIR="$PREFIX/etc/conda/activate.d"
+  DEACTIVATE_DIR="$PREFIX/etc/conda/deactivate.d"
+  mkdir -p "$ACTIVATE_DIR" "$DEACTIVATE_DIR"
+
+  cat > "$ACTIVATE_DIR/fricas-activate.bat" << 'EOF'
 @echo off
-set "FRICAS=%~dp0..\lib\fricas\target\x86_64-w64-mingw32"
-"%FRICAS%\bin\FRICASsys.exe" %*
+set "FRICAS=%CONDA_PREFIX%\Library\lib\fricas\target\x86_64-w64-mingw32"
+EOF
+
+  cat > "$ACTIVATE_DIR/fricas-activate.ps1" << 'EOF'
+$env:FRICAS = "$env:CONDA_PREFIX\Library\lib\fricas\target\x86_64-w64-mingw32"
+EOF
+
+  cat > "$DEACTIVATE_DIR/fricas-deactivate.bat" << 'EOF'
+@echo off
+set "FRICAS="
+EOF
+
+  cat > "$DEACTIVATE_DIR/fricas-deactivate.ps1" << 'EOF'
+Remove-Item Env:\FRICAS -ErrorAction SilentlyContinue
 EOF
 else
   # On Unix, use --enable-lisp-core to avoid macOS codesign issues.
