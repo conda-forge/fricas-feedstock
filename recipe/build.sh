@@ -31,9 +31,11 @@ if [[ "$target_platform" == "win-64" ]]; then
   # "call fricas" instead of just "fricas").
   cp "$FRICAS_TARGET/bin/FRICASsys.exe" "$PREFIX/bin/fricas.exe"
 
-  # Create activation scripts that set the FRICAS environment variable
-  ACTIVATE_DIR="$PREFIX/etc/conda/activate.d"
-  DEACTIVATE_DIR="$PREFIX/etc/conda/deactivate.d"
+  # Create activation scripts that set the FRICAS environment variable.
+  # Use the root prefix (without /Library) since conda looks for
+  # activation scripts at $CONDA_PREFIX/etc/conda/activate.d/.
+  ACTIVATE_DIR="${PREFIX%/Library}/etc/conda/activate.d"
+  DEACTIVATE_DIR="${PREFIX%/Library}/etc/conda/deactivate.d"
   mkdir -p "$ACTIVATE_DIR" "$DEACTIVATE_DIR"
 
   cat > "$ACTIVATE_DIR/fricas-activate.bat" << 'EOF'
